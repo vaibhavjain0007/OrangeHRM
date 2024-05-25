@@ -1,0 +1,110 @@
+package org.example.tests;
+
+import org.example.pages.OrangeHRM;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import org.testng.Assert;
+import org.testng.annotations.*;
+import org.testng.asserts.SoftAssert;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+public class OrangeHRMTest {
+
+    SoftAssert softAssert = new SoftAssert();
+    private WebDriver driver;
+    private OrangeHRM orangeHRM;
+
+    private static final String USERNAME = "Admin";
+    private static final String PASSWORD = "admin123";
+
+    @BeforeClass()
+    public void setUp() {
+        // Set path to chrome driver
+        System.setProperty("webdriver.chrome.driver",
+                "/Users/vaibhav.jain12/Downloads/chromedriver-mac-arm64/chromedriver");
+    }
+
+    @BeforeMethod()
+    public void init() {
+        // Set up the WebDriver instance
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        driver.navigate().to("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login");
+        orangeHRM = new OrangeHRM(driver);
+    }
+
+    @Test()
+    public void testUsernameAndPasswordFields() {
+        // Verify that the Username and Password text fields should be null or blank
+        Assert.assertTrue(orangeHRM.getUsernameText().isEmpty(), "username field should be empty by default");
+        Assert.assertTrue(orangeHRM.getPasswordText().isEmpty(), "password field should be empty by default");
+    }
+
+    @Test()
+    public void testLoginFunctionality() {
+        orangeHRM.login(USERNAME, PASSWORD);
+        Assert.assertTrue(orangeHRM.getItems().contains("Logout"), "Logout option should be displayed");
+    }
+
+    @Test()
+    public void testPunchInAndPunchOutFunctionality() throws InterruptedException {
+        String dateTime;
+        orangeHRM.login(USERNAME, PASSWORD);
+        String punchedInOut = orangeHRM.userIsPunchInOrOut();
+        if (punchedInOut.equals("Punched In")) {
+            punchOut();
+        }
+        orangeHRM.clickStopWatch();
+        Assert.assertTrue(orangeHRM.getPageTitle().contains("Attendance"));
+        dateTime = getDateTime();
+        orangeHRM.punchIn();
+        driver.navigate().back();
+        driver.navigate().refresh();
+        Assert.assertEquals(orangeHRM.userIsPunchInOrOut(), "Punched In", "Attendance record not updated");
+        Assert.assertTrue(orangeHRM.getPunchInOutDetails().contains(dateTime));
+        punchOut();
+    }
+
+    @Test()
+    public void testQuickLaunchButtons() {
+        String expectedHexValue = "#64728c"; // default color (no hover)
+        orangeHRM.login(USERNAME, PASSWORD);
+        orangeHRM.selectQuickHelp("My Leave");
+        softAssert.assertEquals(orangeHRM.getPageTitle(), "Leave");
+        softAssert.assertEquals(orangeHRM.getSelectedTab(), "My Leave");
+        driver.navigate().back();
+        softAssert.assertEquals(orangeHRM.getPageTitle(), "Dashboard");
+        orangeHRM.hoverOnQuickLaunchItem("My Leave");
+        softAssert.assertNotEquals(orangeHRM.getQuickLaunchIconsColor("My Leave"), expectedHexValue);
+        softAssert.assertAll("Quick launch validations failed");
+    }
+
+    private String getDateTime() {
+        LocalDateTime dateTime = LocalDateTime.now();
+        // Define the desired date and time format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+        return dateTime.format(formatter);
+    }
+
+    private void punchOut() {
+        orangeHRM.clickStopWatch();
+        Assert.assertTrue(orangeHRM.getPageTitle().contains("Attendance"));
+        orangeHRM.punchOut();
+        String dateTime = getDateTime();
+        driver.navigate().back();
+        driver.navigate().refresh();
+        Assert.assertEquals(orangeHRM.userIsPunchInOrOut(), "Punched Out",
+                "Attendance record not updated");
+        Assert.assertTrue(orangeHRM.getPunchInOutDetails().contains(dateTime));
+    }
+
+    @AfterMethod()
+    public void tearDown() {
+        driver.quit();
+    }
+}

@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="OrangeHRM Tests Suite">
+    <test name="OrangeHRM Tests">
+        <classes>
+            <class name="org.example.tests.OrangeHRMTest"/>
+        </classes>
+    </test>
+</suite>
