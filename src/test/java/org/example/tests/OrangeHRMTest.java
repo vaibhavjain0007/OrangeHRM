@@ -4,6 +4,7 @@ import org.example.pages.OrangeHRM;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import org.openqa.selenium.edge.EdgeDriver;
 import org.testng.Assert;
 import org.testng.annotations.*;
 import org.testng.asserts.SoftAssert;
@@ -24,16 +25,20 @@ public class OrangeHRMTest {
     @BeforeClass()
     public void setUp() {
         // Set path to chrome driver
+//        System.setProperty("webdriver.chrome.driver",
+//                "C:\\Users\\Vaibhav Jain\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
         System.setProperty("webdriver.chrome.driver",
-                "/Users/vaibhav.jain12/Downloads/chromedriver-mac-arm64/chromedriver");
+                "C:\\Users\\Vaibhav Jain\\Downloads\\edgedriver_win64\\msedgedriver.exe");
     }
 
     @BeforeMethod()
     public void init() {
         // Set up the WebDriver instance
-        driver = new ChromeDriver();
+//        driver = new ChromeDriver();
+        driver = new EdgeDriver();
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+//        driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login");
         driver.navigate().to("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login");
         orangeHRM = new OrangeHRM(driver);
     }
