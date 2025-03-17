@@ -17,7 +17,7 @@ pipeline {
       steps {
                 script {
                     checkout scmGit(
-                        branches: [[name: '*/test_branch']],
+                        branches: [[name: '*/test_branch2']],
                         extensions: [
                             sparseCheckout([
                                 [path: 'src'],
