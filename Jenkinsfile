@@ -1,10 +1,15 @@
 pipeline {
   agent any
 
+  parameters {
+    string description: 'Enter email address', name: 'EMAIL_ADDRESS'
+  }
+
   stages {
     stage('Send Email') {
       steps {
-        mail body: 'testing', subject: 'testing OrangeHRM', to: 'mfsi.vaibhav@gmail.com'
+        echo 'sending email to ${params.EMAIL_ADDRESS}'
+        mail body: 'testing', subject: 'testing OrangeHRM', to: '${params.EMAIL_ADDRESS}'
       }
     }
     
