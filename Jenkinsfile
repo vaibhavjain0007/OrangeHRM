@@ -2,6 +2,12 @@ pipeline {
   agent any
 
   stages {
+    stage('Send Email') {
+      steps {
+        mail body: 'testing', subject: 'testing OrangeHRM', to: 'mfsi.vaibhav@gmail.com'
+      }
+    }
+    
     stage('Checkout') {
       steps {
                 script {
