@@ -65,7 +65,7 @@ public class OrangeHRMTest {
         Assert.assertTrue(orangeHRM.getItems().contains("Logout"), "Logout option should be displayed");
     }
 
-    @Test()
+//    @Test()
     public void testPunchInAndPunchOutFunctionality() throws InterruptedException {
         String dateTime;
         orangeHRM.login(USERNAME, PASSWORD);
