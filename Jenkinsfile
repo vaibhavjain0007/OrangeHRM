@@ -8,8 +8,8 @@ pipeline {
   stages {
     stage('Send Email') {
       steps {
-        echo 'sending email to ${params.EMAIL_ADDRESS}'
-        mail body: 'testing', subject: 'testing OrangeHRM', to: '${params.EMAIL_ADDRESS}'
+        echo "sending email to ${params.EMAIL_ADDRESS}"
+        mail body: 'testing', subject: 'testing OrangeHRM', to: "${params.EMAIL_ADDRESS}"
       }
     }
     
