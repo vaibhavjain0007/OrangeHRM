@@ -21,7 +21,9 @@ pipeline {
     }
 
     stage ('Test') {
-      sh 'mvn clean test'
+      steps {
+        sh 'mvn clean test'
+      }
     }
   }
 }
