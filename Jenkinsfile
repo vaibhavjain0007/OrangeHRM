@@ -6,22 +6,29 @@ pipeline {
   }
 
   stages {
+    stage('Cleanup') {
+      steps {
+        script {
+          deleteDir() // cleanup the workspace
+        }
+      }
+    }
     stage('Git Checkout') {
       steps {
-                script {
-                    checkout scmGit(
-                        branches: [[name: '*/test_branch2']],
-                        extensions: [
-                            sparseCheckout([
-                                [path: 'src'],
-                                [path: 'pom.xml'],
-                                [path: 'testng.xml']
-                            ])
-                        ],
-                        userRemoteConfigs: [[url: 'https://github.com/vaibhavjain0007/OrangeHRM']]
-                    )
-                }
-            }
+        script {
+          checkout scmGit(
+            branches: [[name: '*/test_branch2']],
+            extensions: [
+              sparseCheckout([
+                [path: 'src'],
+                [path: 'pom.xml'],
+                [path: 'testng.xml']
+              ])
+            ],
+            userRemoteConfigs: [[url: 'https://github.com/vaibhavjain0007/OrangeHRM']]
+            )
+        }
+      }
     }
 
     stage('Build') {
