@@ -58,11 +58,17 @@ pipeline {
   post {
     always {
       // Archive HTML report (adjust the path to where your report is generated)
-      publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, icon: '', keepAll: false, reportDir: 'target', reportFiles: '/test-output/index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+      echo "Publishing the report always"
+      publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, icon: '', keepAll: false, reportDir: 'target', reportFiles: 'test-output/index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
       junit '**/target/test-output/junitreports/TEST-*.xml'
     }
 
+    success {
+      echo "The pipeline completed successfully!"  // Message when the build succeeds
+    }
+
     failure {
+      echo "The pipeline failed!"  // Message when the build fails
       junit testDataPublishers: [attachments()], testResults: '**/target/test-output/*.xml'
     }
   }
