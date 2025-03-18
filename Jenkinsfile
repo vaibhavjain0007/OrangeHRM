@@ -61,5 +61,9 @@ pipeline {
       publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, icon: '', keepAll: false, reportDir: 'target', reportFiles: '/test-output/index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
       junit '**/target/test-output/junitreports/TEST-*.xml'
     }
+
+    failure {
+      junit testDataPublishers: [attachments()], testResults: '**/target/test-output/*.xml'
+    }
   }
 }
