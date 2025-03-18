@@ -64,6 +64,7 @@ pipeline {
 
       // Send an email with the HTML report attached
       //mail subject: 'Build and Test Report for OrangeHRM', body: 'Please find the build and test report attached.', to: "${params.EMAIL_ADDRESS}", attachFiles: 'target/test-output/index.html'
+      emailext subject: 'Build and Test Report for OrangeHRM', body: 'Please find the build and test report attached.', to: "${params.EMAIL_ADDRESS}", attachmentsPattern: 'target/test-output/index.html'
     }
 
     success {
