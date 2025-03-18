@@ -58,7 +58,8 @@ pipeline {
   post {
     always {
       // Archive HTML report (adjust the path to where your report is generated)
-      publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: '', reportFiles: '/target/test-output/index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+      publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, icon: '', keepAll: false, reportDir: 'target', reportFiles: '/test-output/index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+      junit '**/target/test-output/testng-results.xml'
     }
   }
 }
