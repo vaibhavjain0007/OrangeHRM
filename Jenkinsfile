@@ -62,10 +62,8 @@ pipeline {
       publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, icon: '', keepAll: false, reportDir: 'target', reportFiles: 'test-output/index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
       junit '**/target/test-output/junitreports/TEST-*.xml'
 
-      def reportPath = 'target/test-output/index.html'
-
       // Send an email with the HTML report attached
-      mail subject: 'Build and Test Report for OrangeHRM', body: 'Please find the build and test report attached.', to: "${params.EMAIL_ADDRESS}", attachmentsPattern: reportPath
+      mail subject: 'Build and Test Report for OrangeHRM', body: 'Please find the build and test report attached.', to: "${params.EMAIL_ADDRESS}", attachFiles: "target/test-output/index.html"
     }
 
     success {
