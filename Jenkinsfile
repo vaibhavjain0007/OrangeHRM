@@ -6,14 +6,7 @@ pipeline {
   }
 
   stages {
-    stage('Send Email') {
-      steps {
-        echo "sending email to ${params.EMAIL_ADDRESS}"
-        mail body: 'testing', subject: 'testing OrangeHRM', to: "${params.EMAIL_ADDRESS}"
-      }
-    }
-    
-    stage('Checkout') {
+    stage('Git Checkout') {
       steps {
                 script {
                     checkout scmGit(
@@ -31,11 +24,35 @@ pipeline {
             }
     }
 
+    stage('Build') {
+      steps {
+        bat 'mvn clean install'
+      }
+    }
+
+    stage('Send Email') {
+      steps {
+        echo "sending email to ${params.EMAIL_ADDRESS}"
+        mail body: 'testing', subject: 'testing OrangeHRM', to: "${params.EMAIL_ADDRESS}"
+      }
+    }
+
     stage ('Test') {
       steps {
         bat 'mvn clean test'
       }
     }
+
+    stage('Trigger Downstream Job') {
+            steps {
+                script {
+                    // Trigger the downstream job
+                    build job: 'Send Email', wait: false
+                    // The 'wait: false' ensures that the downstream job is triggered asynchronously, and the pipeline continues
+                    // Use 'wait: true' if you want the pipeline to wait for the downstream job to finish before proceeding
+                }
+            }
+        }
   }
 
   post {
