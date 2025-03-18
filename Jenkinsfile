@@ -9,6 +9,7 @@ pipeline {
     stage('Cleanup') {
       steps {
         script {
+          echo "Cleaning up the workspace"
           deleteDir() // cleanup the workspace
         }
       }
@@ -16,6 +17,7 @@ pipeline {
     stage('Git Checkout') {
       steps {
         script {
+          echo "Sparse checkout to git branch"
           checkout scmGit(
             branches: [[name: '*/test_branch2']],
             extensions: [
@@ -33,6 +35,7 @@ pipeline {
 
     stage('Build') {
       steps {
+        echo "Building the project"
         bat 'mvn clean install'
       }
     }
@@ -47,6 +50,7 @@ pipeline {
 
     stage ('Test') {
       steps {
+        echo "Testing the project"
         bat 'mvn clean test'
       }
     }
@@ -54,10 +58,11 @@ pipeline {
     stage('Trigger Downstream Job') {
             steps {
                 script {
-                    // Trigger the downstream job
-                    build job: 'sample_release_job', wait: false
-                    // The 'wait: false' ensures that the downstream job is triggered asynchronously, and the pipeline continues
-                    // Use 'wait: true' if you want the pipeline to wait for the downstream job to finish before proceeding
+                  echo "Triggering the downstream job"
+                  // Trigger the downstream job
+                  build job: 'sample_release_job', wait: false
+                  // The 'wait: false' ensures that the downstream job is triggered asynchronously, and the pipeline continues
+                  // Use 'wait: true' if you want the pipeline to wait for the downstream job to finish before proceeding
                 }
             }
         }
@@ -72,12 +77,12 @@ pipeline {
 
       // Send an email with the HTML report attached
       //mail subject: 'Build and Test Report for OrangeHRM', body: 'Please find the build and test report attached.', to: "${params.EMAIL_ADDRESS}", attachFiles: 'target/test-output/index.html'
-      emailext subject: 'Build and Test Report for OrangeHRM', body: 'Please find the build and test report attached.', to: "${params.EMAIL_ADDRESS}", attachmentsPattern: 'target/test-output/index.html'
+      //emailext subject: 'Build and Test Report for OrangeHRM', body: 'Please find the build and test report attached.', to: "${params.EMAIL_ADDRESS}", attachmentsPattern: 'target/test-output/index.html'
     }
 
     success {
       echo "The pipeline completed successfully!"  // Message when the build succeeds
-      emailext subject: 'Build and Test Report for OrangeHRM', body: 'Please find the build and test report attached.', to: "${params.EMAIL_ADDRESS}", attachmentsPattern: 'target/test-output/index.html'
+      //emailext subject: 'Build and Test Report for OrangeHRM', body: 'Please find the build and test report attached.', to: "${params.EMAIL_ADDRESS}", attachmentsPattern: 'target/test-output/index.html'
     }
 
     failure {
