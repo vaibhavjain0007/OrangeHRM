@@ -47,7 +47,7 @@ pipeline {
             steps {
                 script {
                     // Trigger the downstream job
-                    build job: 'Send Email', wait: false
+                    build job: 'sample_release_job', wait: false
                     // The 'wait: false' ensures that the downstream job is triggered asynchronously, and the pipeline continues
                     // Use 'wait: true' if you want the pipeline to wait for the downstream job to finish before proceeding
                 }
