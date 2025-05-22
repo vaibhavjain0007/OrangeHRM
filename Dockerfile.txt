@@ -1,0 +1,8 @@
+# Use a base image with Java
+FROM openjdk:17-jdk
+WORKDIR C:/Users/Vaibhav Jain/OrangeHRM/OrangeHRM
+COPY target/selenium-docker.jar selenium-docker.jar
+COPY target/selenium-docker-tests.jar selenium-docker-tests.jar
+COPY target/lib lib
+COPY testng.xml testng.xml
+ENTRYPOINT java -cp selenium-docker.jar:selenium-docker-tests.jar:libs/* -DBROWSER = $BROWSER -DHUB_HOST=$HUB_HOST org.testng.TestNG testng.xml

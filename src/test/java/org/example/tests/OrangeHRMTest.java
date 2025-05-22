@@ -8,10 +8,14 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.Assert;
 import org.testng.annotations.*;
 import org.testng.asserts.SoftAssert;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 public class OrangeHRMTest {
 
     SoftAssert softAssert = new SoftAssert();
-    private WebDriver driver;
+    private RemoteWebDriver driver;
     private OrangeHRM orangeHRM;
 
     private static final String USERNAME = "Admin";
@@ -31,20 +35,22 @@ public class OrangeHRMTest {
 //        System.setProperty("webdriver.chrome.driver",
 //                "C:\\Users\\Vaibhav Jain\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
 //        WebDriverManager.edgedriver().setup();
-        WebDriverManager.chromedriver().setup();
+//        WebDriverManager.chromedriver().setup();
 //        System.setProperty("webdriver.chrome.driver",
 //                "C:\\Users\\Vaibhav Jain\\Downloads\\edgedriver_win64\\msedgedriver.exe");
     }
 
     @BeforeMethod()
-    public void init() {
+    public void init() throws Exception {
         // Set up the WebDriver instance
 //        driver = new ChromeDriver();
 //        EdgeOptions options = new EdgeOptions();
 //        options.addArguments("--headless");  // Add headless argument
 //        driver = new EdgeDriver(options);
 //        driver = new EdgeDriver();
-        driver = new ChromeDriver();
+//        driver = new ChromeDriver();
+        FirefoxOptions options = new FirefoxOptions();
+        driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), options);
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 //        driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login");

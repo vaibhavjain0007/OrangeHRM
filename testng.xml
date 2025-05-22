@@ -1,8 +1,18 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="OrangeHRM Tests Suite">
-    <test name="OrangeHRM Tests">
+<suite name="OrangeHRM Tests Suite" parallel="tests">
+    <test name="OrangeHRM Tests 1">
         <classes>
             <class name="org.example.tests.OrangeHRMTest"/>
         </classes>
     </test>
+    <test name="OrangeHRM Tests 2">
+        <classes>
+            <class name="org.example.tests.OrangeHRMTest"/>
+        </classes>
+    </test>
+<!--    <test name="OrangeHRM Tests 3">-->
+<!--        <classes>-->
+<!--            <class name="org.example.tests.OrangeHRMTest"/>-->
+<!--        </classes>-->
+<!--    </test>-->
 </suite>
