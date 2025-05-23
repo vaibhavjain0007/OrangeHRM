@@ -1,93 +1,36 @@
 pipeline {
-  agent any
-
-  parameters {
-    string description: 'Enter email address', name: 'EMAIL_ADDRESS'
-  }
-
-  stages {
-    stage('Cleanup') {
-      steps {
-        script {
-          echo "Cleaning up the workspace"
-          deleteDir() // cleanup the workspace
-        }
-      }
-    }
-    stage('Git Checkout') {
-      steps {
-        script {
-          echo "Sparse checkout to git branch"
-          checkout scmGit(
-            branches: [[name: '*/test_branch2']],
-            extensions: [
-              sparseCheckout([
-                [path: 'src'],
-                [path: 'pom.xml'],
-                [path: 'testng.xml']
-              ])
-            ],
-            userRemoteConfigs: [[url: 'https://github.com/vaibhavjain0007/OrangeHRM']]
-            )
-        }
-      }
-    }
-
-    stage('Build') {
-      steps {
-        echo "Building the project"
-        bat 'mvn clean install'
-      }
-    }
-
-    stage('Send Email') {
-      steps {
-        echo "sending email to ${params.EMAIL_ADDRESS}"
-        mail body: 'testing', subject: 'testing OrangeHRM', to: "${params.EMAIL_ADDRESS}"
-        emailext body: 'testing', subject: 'testing OrangeHRM', to: "${params.EMAIL_ADDRESS}"
-      }
-    }
-
-    stage ('Test') {
-      steps {
-        echo "Testing the project"
-        bat 'mvn clean test'
-      }
-    }
-
-    stage('Trigger Downstream Job') {
+    agent any
+    stages {
+        stage ('Build Jar') {
             steps {
-                script {
-                  echo "Triggering the downstream job"
-                  // Trigger the downstream job
-                  build job: 'sample_release_job', wait: false
-                  // The 'wait: false' ensures that the downstream job is triggered asynchronously, and the pipeline continues
-                  // Use 'wait: true' if you want the pipeline to wait for the downstream job to finish before proceeding
-                }
+                bat "mvn clean package -DskipTests"
             }
         }
-  }
-
-  post {
-    always {
-      // Archive HTML report (adjust the path to where your report is generated)
-      echo "Publishing the report always"
-      publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, icon: '', keepAll: false, reportDir: 'target', reportFiles: 'test-output/index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
-      junit '**/target/test-output/junitreports/TEST-*.xml'
-
-      // Send an email with the HTML report attached
-      //mail subject: 'Build and Test Report for OrangeHRM', body: 'Please find the build and test report attached.', to: "${params.EMAIL_ADDRESS}", attachFiles: 'target/test-output/index.html'
-      //emailext subject: 'Build and Test Report for OrangeHRM', body: 'Please find the build and test report attached.', to: "${params.EMAIL_ADDRESS}", attachmentsPattern: 'target/test-output/index.html'
+        stage ('Build Image') {
+            steps {
+                bat "docker build -t vaibhavj007/selenium-docker" -f ./Dockerfile.txt ."
+            }
+        }
+        stage ('Push Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                    //sh
+                    bat "docker login --username=${user} --password=${pass}"
+            bat "docker push vaibhavj007/selenium-docker:latest"
+            }
+        }
     }
 
-    success {
-      echo "The pipeline completed successfully!"  // Message when the build succeeds
-      //emailext subject: 'Build and Test Report for OrangeHRM', body: 'Please find the build and test report attached.', to: "${params.EMAIL_ADDRESS}", attachmentsPattern: 'target/test-output/index.html'
-    }
+    post {
+        always {
+          // Archive HTML report (adjust the path to where your report is generated)
+          echo "Publishing the report always"
+          // publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, icon: '', keepAll: false, reportDir: 'target', reportFiles: 'test-output/index.html', reportName: 'HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+          // junit '**/target/test-output/junitreports/TEST-*.xml'
 
-    failure {
-      echo "The pipeline failed!"  // Message when the build fails
-      junit testDataPublishers: [attachments()], testResults: '**/target/test-output/*.xml'
+          // Send an email with the HTML report attached
+          // mail subject: 'Build and Test Report for OrangeHRM', body: 'Please find the build and test report attached.', to: "${params.EMAIL_ADDRESS}", attachFiles: 'target/test-output/index.html'
+          // emailext subject: 'Build and Test Report for OrangeHRM', body: 'Please find the build and test report attached.', to: "${params.EMAIL_ADDRESS}", attachmentsPattern: 'target/test-output/index.html'
+        }
     }
-  }
 }
